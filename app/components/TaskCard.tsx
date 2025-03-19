@@ -4,6 +4,7 @@ import TaskTitleBox from "./TaskTitleBox";
 import TaskItem from "./TaskItem";
 import AddNewTaskItem from "./AddNewTaskItem";
 import StarButton from "./StarButton";
+import DeleteButton from "./DeleteButton";
 
 const TaskCard = () => {
   // Initial tasks data
@@ -28,6 +29,24 @@ const TaskCard = () => {
     },
     {
       title: "Task Group 3",
+      items: [
+        { description: "Task 1", isDone: false },
+        { description: "Task 2", isDone: false },
+        { description: "Task 3", isDone: false },
+      ],
+      isStarred: false,
+    },
+    {
+      title: "Task Group 4",
+      items: [
+        { description: "Task 1", isDone: false },
+        { description: "Task 2", isDone: false },
+        { description: "Task 3", isDone: false },
+      ],
+      isStarred: false,
+    },
+    {
+      title: "Task Group 5",
       items: [
         { description: "Task 1", isDone: false },
         { description: "Task 2", isDone: false },
@@ -88,12 +107,20 @@ const TaskCard = () => {
     newTasks[taskGroupIndex].isStarred = !newTasks[taskGroupIndex].isStarred;
     setTasks(newTasks);
   };
+  //Delete task group
+  const handleDeleteTaskGroup = (taskGroupIndex: number) => {
+    if (confirm("Are you sure you want to delete this task group?")) {
+      const newTasks = [...tasks];
+      newTasks.splice(taskGroupIndex, 1);
+      setTasks(newTasks);
+    }
+  };
 
   console.log(tasks, "~~~tasks");
 
   return (
-    <div className=" w-full flex justify-center mt-10">
-      <div className="flex flex-col w-3/6 gap-5">
+    <div className=" w-full flex justify-center mt-10 h-screen overflow-hidden">
+      <div className="flex flex-col w-3/6 gap-5 h-screen overflow-scroll">
         {/* Render task groups */}
         {tasks.map((taskGroup, taskGroupIndex) => (
           <React.Fragment key={taskGroupIndex}>
@@ -107,11 +134,17 @@ const TaskCard = () => {
                   handleChange={handleTaskTitleChange}
                   taskGroupIndex={taskGroupIndex}
                 />
-                <StarButton
-                  taskGroupIndex={taskGroupIndex}
-                  isStarred={taskGroup.isStarred}
-                  handleChange={handleStartStatusChange}
-                />
+                <div className="flex gap-2">
+                  <StarButton
+                    taskGroupIndex={taskGroupIndex}
+                    isStarred={taskGroup.isStarred}
+                    handleClick={handleStartStatusChange}
+                  />
+                  <DeleteButton
+                    taskGroupIndex={taskGroupIndex}
+                    handleClick={handleDeleteTaskGroup}
+                  />
+                </div>
               </div>
               <ul>
                 {/* Render tasks inside the group */}

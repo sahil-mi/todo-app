@@ -5,15 +5,18 @@ import Image from "next/image";
 
 interface StarButtonProps {
   taskGroupIndex: number;
-  handleChange: (taskGroupIndex: number) => void;
+  handleClick: (taskGroupIndex: number) => void;
   isStarred: boolean;
 }
 
 const StarButton: React.FC<StarButtonProps> = (props) => {
-  const { isStarred, taskGroupIndex, handleChange } = props;
+  const { isStarred, taskGroupIndex, handleClick } = props;
   return (
     <div>
-      <button onClick={() => handleChange(taskGroupIndex)}>
+      <button
+        className="cursor-pointer"
+        onClick={() => handleClick(taskGroupIndex)}
+      >
         <Image
           width="20"
           height="20"
