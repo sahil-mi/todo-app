@@ -11,6 +11,7 @@ interface TaskItemProps {
   handleToggle: (taskGroupIndex: number, taskItemIndex: number) => void;
   taskGroupIndex: number;
   taskItemIndex: number;
+  handleRemove: (taskGroupIndex: number, taskItemIndex: number) => void;
 }
 
 const TaskItem: React.FC<TaskItemProps> = (props) => {
@@ -21,6 +22,7 @@ const TaskItem: React.FC<TaskItemProps> = (props) => {
     handleToggle,
     taskGroupIndex,
     taskItemIndex,
+    handleRemove,
   } = props;
   return (
     <div className="flex">
@@ -39,6 +41,12 @@ const TaskItem: React.FC<TaskItemProps> = (props) => {
           value={description}
           onChange={(e) => handleChange(e, taskGroupIndex, taskItemIndex)}
         />
+        <span
+          onClick={() => handleRemove(taskGroupIndex, taskItemIndex)}
+          className="text-[#3d3839] cursor-pointer hover:text-white"
+        >
+          X
+        </span>
       </div>
     </div>
   );

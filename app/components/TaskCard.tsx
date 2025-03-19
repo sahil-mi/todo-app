@@ -116,6 +116,22 @@ const TaskCard = () => {
     }
   };
 
+  const handleRemoveTaskItem = (
+    taskGroupIndex: number,
+    taskItemIndex: number
+  ) => {
+    const newTasks = [...tasks];
+    const value = newTasks[taskGroupIndex].items[taskItemIndex].description;
+    if (value) {
+      if (confirm("Are you sure you want to delete this task?")) {
+        newTasks[taskGroupIndex].items.splice(taskItemIndex, 1);
+      }
+    } else {
+      newTasks[taskGroupIndex].items.splice(taskItemIndex, 1);
+    }
+    setTasks(newTasks);
+  };
+
   console.log(tasks, "~~~tasks");
 
   return (
@@ -159,6 +175,7 @@ const TaskCard = () => {
                           handleToggle={handleTaskCompletionToggle}
                           taskGroupIndex={taskGroupIndex}
                           taskItemIndex={taskItemIndex}
+                          handleRemove={handleRemoveTaskItem}
                         />
                       </div>
                     </li>
