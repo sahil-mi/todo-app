@@ -15,6 +15,7 @@ const TaskCard = () => {
         { description: "Task 2", isDone: false },
         { description: "Task 3", isDone: true },
       ],
+      isStarred: false,
     },
     {
       title: "Task Group 2",
@@ -23,6 +24,7 @@ const TaskCard = () => {
         { description: "Task 2", isDone: true },
         { description: "Task 3", isDone: false },
       ],
+      isStarred: false,
     },
     {
       title: "Task Group 3",
@@ -31,6 +33,7 @@ const TaskCard = () => {
         { description: "Task 2", isDone: false },
         { description: "Task 3", isDone: false },
       ],
+      isStarred: false,
     },
   ];
 
@@ -79,6 +82,13 @@ const TaskCard = () => {
     setTasks(newTasks);
   };
 
+  // change star status
+  const handleStartStatusChange = (taskGroupIndex: number) => {
+    const newTasks = [...tasks];
+    newTasks[taskGroupIndex].isStarred = !newTasks[taskGroupIndex].isStarred;
+    setTasks(newTasks);
+  };
+
   console.log(tasks, "~~~tasks");
 
   return (
@@ -97,7 +107,11 @@ const TaskCard = () => {
                   handleChange={handleTaskTitleChange}
                   taskGroupIndex={taskGroupIndex}
                 />
-                <StarButton />
+                <StarButton
+                  taskGroupIndex={taskGroupIndex}
+                  isStarred={taskGroup.isStarred}
+                  handleChange={handleStartStatusChange}
+                />
               </div>
               <ul>
                 {/* Render tasks inside the group */}
