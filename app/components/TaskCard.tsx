@@ -2,13 +2,14 @@
 import React, { useState } from "react";
 import TaskTitleBox from "./TaskTitleBox";
 import TaskItem from "./TaskItem";
+import AddNewTaskItem from "./AddNewTaskItem";
 
 const TaskCard = () => {
   const tasksData = [
     {
-      title: "Task Group 1", // Represents the name of the task group
+      title: "Task Group 1",
       items: [
-        { description: "Task 1", isDone: false }, // Represents individual tasks with a description
+        { description: "Task 1", isDone: false },
         { description: "Task 2", isDone: false },
         { description: "Task 3", isDone: true },
       ],
@@ -66,6 +67,12 @@ const TaskCard = () => {
     setTasks(newTasks);
   };
 
+  const addNewTaskItem = (taskGroupIndex: number) => {
+    const newTasks = [...tasks];
+    newTasks[taskGroupIndex].items.push({ description: "", isDone: false });
+    setTasks(newTasks);
+  };
+
   console.log(tasks, "~~~tasks");
 
   return (
@@ -102,6 +109,13 @@ const TaskCard = () => {
                   </React.Fragment>
                 ))}
               </ul>
+
+              <div className="flex items-center p-1">
+                <AddNewTaskItem
+                  taskGroupIndex={taskGroupIndex}
+                  handleClick={addNewTaskItem}
+                />
+              </div>
             </div>
           </React.Fragment>
         ))}
