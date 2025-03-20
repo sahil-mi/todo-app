@@ -56,7 +56,7 @@ const TaskCard = () => {
     },
   ];
 
-  const [tasks, setTasks] = useState([...tasksData]);
+  const [tasks, setTasks] = useState([]);
 
   // handle task title change
   const handleTaskTitleChange = (
@@ -131,6 +131,23 @@ const TaskCard = () => {
     }
     setTasks(newTasks);
   };
+
+  const fetchTasks = async () => {
+    try {
+      const res = await fetch("/api/todo", {
+        method: "GET",
+      });
+      const data = await res.json();
+      console.log(data, "data");
+      setTasks(data);
+    } catch (error) {
+      console.log(error, "error");
+    }
+  };
+
+  React.useEffect(() => {
+    fetchTasks();
+  }, []);
 
   console.log(tasks, "~~~tasks");
 
