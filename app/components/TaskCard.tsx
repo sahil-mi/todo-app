@@ -5,6 +5,7 @@ import TaskItem from "./TaskItem";
 import AddNewTaskItem from "./AddNewTaskItem";
 import StarButton from "./StarButton";
 import DeleteButton from "./DeleteButton";
+import SideNavbar from "./SideNavbar";
 
 const TaskCard = () => {
   // Initial tasks data
@@ -152,65 +153,70 @@ const TaskCard = () => {
   console.log(tasks, "~~~tasks");
 
   return (
-    <div className=" w-full flex justify-center mt-10 h-screen overflow-hidden">
-      <div className="flex flex-col w-3/6 gap-5 h-screen overflow-scroll">
-        {/* Render task groups */}
-        {tasks.map((taskGroup, taskGroupIndex) => (
-          <React.Fragment key={taskGroupIndex}>
-            <div
-              style={{ boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }}
-              className="bg-[#211d1e] rounded-xl p-5"
-            >
-              <div className="flex justify-between items-center p-1 ">
-                <TaskTitleBox
-                  value={taskGroup.title}
-                  handleChange={handleTaskTitleChange}
-                  taskGroupIndex={taskGroupIndex}
-                />
-                <div className="flex gap-2">
-                  <StarButton
+    <>
+      {/* navbar */}
+      <SideNavbar />
+      {/* other part */}
+      <div className=" w-full flex justify-center mt-10 h-screen overflow-hidden">
+        <div className="flex flex-col w-3/6 gap-5 h-screen overflow-scroll">
+          {/* Render task groups */}
+          {tasks.map((taskGroup, taskGroupIndex) => (
+            <React.Fragment key={taskGroupIndex}>
+              <div
+                style={{ boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }}
+                className="bg-[#211d1e] rounded-xl p-5"
+              >
+                <div className="flex justify-between items-center p-1 ">
+                  <TaskTitleBox
+                    value={taskGroup.title}
+                    handleChange={handleTaskTitleChange}
                     taskGroupIndex={taskGroupIndex}
-                    isStarred={taskGroup.isStarred}
-                    handleClick={handleStartStatusChange}
                   />
-                  <DeleteButton
+                  <div className="flex gap-2">
+                    <StarButton
+                      taskGroupIndex={taskGroupIndex}
+                      isStarred={taskGroup.isStarred}
+                      handleClick={handleStartStatusChange}
+                    />
+                    <DeleteButton
+                      taskGroupIndex={taskGroupIndex}
+                      handleClick={handleDeleteTaskGroup}
+                    />
+                  </div>
+                </div>
+                <ul>
+                  {/* Render tasks inside the group */}
+                  {taskGroup.items.map((taskItem, taskItemIndex) => (
+                    <React.Fragment key={taskItemIndex}>
+                      <li className="p-3">
+                        <div>
+                          <TaskItem
+                            description={taskItem.description}
+                            isDone={taskItem.isDone}
+                            handleChange={handleTaskDescriptionUpdate}
+                            handleToggle={handleTaskCompletionToggle}
+                            taskGroupIndex={taskGroupIndex}
+                            taskItemIndex={taskItemIndex}
+                            handleRemove={handleRemoveTaskItem}
+                          />
+                        </div>
+                      </li>
+                    </React.Fragment>
+                  ))}
+                </ul>
+                {/* Add new task inside a group btn */}
+                <div className="flex items-center p-1">
+                  <AddNewTaskItem
                     taskGroupIndex={taskGroupIndex}
-                    handleClick={handleDeleteTaskGroup}
+                    handleClick={addNewTaskItem}
                   />
                 </div>
               </div>
-              <ul>
-                {/* Render tasks inside the group */}
-                {taskGroup.items.map((taskItem, taskItemIndex) => (
-                  <React.Fragment key={taskItemIndex}>
-                    <li className="p-3">
-                      <div>
-                        <TaskItem
-                          description={taskItem.description}
-                          isDone={taskItem.isDone}
-                          handleChange={handleTaskDescriptionUpdate}
-                          handleToggle={handleTaskCompletionToggle}
-                          taskGroupIndex={taskGroupIndex}
-                          taskItemIndex={taskItemIndex}
-                          handleRemove={handleRemoveTaskItem}
-                        />
-                      </div>
-                    </li>
-                  </React.Fragment>
-                ))}
-              </ul>
-              {/* Add new task inside a group btn */}
-              <div className="flex items-center p-1">
-                <AddNewTaskItem
-                  taskGroupIndex={taskGroupIndex}
-                  handleClick={addNewTaskItem}
-                />
-              </div>
-            </div>
-          </React.Fragment>
-        ))}
+            </React.Fragment>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

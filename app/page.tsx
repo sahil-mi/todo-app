@@ -6,9 +6,6 @@ export default function Home() {
     <main>
       <section>
         <div className="flex justify-between">
-          {/* navbar */}
-          <SideNavbar />
-          {/* home page */}
           <TaskCard />
         </div>
       </section>
