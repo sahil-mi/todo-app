@@ -14,17 +14,19 @@ const TaskCard = () => {
     {
       _id: null,
       title: "Task Group",
-      items: [
-        { _id: null, description: "Task 1", isDone: false },
-        { _id: null, description: "Task 2", isDone: false },
-        { _id: null, description: "Task 3", isDone: true },
-      ],
+      items: [{ _id: null, description: " ", isDone: false }],
       isStarred: false,
     },
   ];
 
   const [tasks, setTasks] = useState([...tasksData]);
   const [menuOption, setMenuOptions] = useState(0);
+
+  const [search, setSearch] = useState("");
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+  };
 
   // handle task title change
   const handleTaskTitleChange = (
@@ -142,14 +144,19 @@ const TaskCard = () => {
 
   //----------apis---------------
   const fetchTasks = async () => {
-    const isStarred = menuOption === 1 ? true : null;
+    const isStarred = menuOption === 1 ? "true" : null;
     let apiURL = "/api/todo";
+    const queryParams = new URLSearchParams();
+
     if (isStarred) {
-      apiURL = `/api/todo?isStarred=${isStarred}`;
+      queryParams.append("isStarred", isStarred);
+    }
+    if (search) {
+      queryParams.append("search", search);
     }
 
     try {
-      const res = await fetch(apiURL, {
+      const res = await fetch((apiURL += `?${queryParams.toString()}`), {
         method: "GET",
       });
       const data = await res.json();
@@ -215,7 +222,7 @@ const TaskCard = () => {
 
   React.useEffect(() => {
     fetchTasks();
-  }, [menuOption]);
+  }, [menuOption, search]);
 
   console.log(tasks, "~~~tasks");
 
@@ -230,6 +237,15 @@ const TaskCard = () => {
       {/* other part */}
       <div className=" w-full flex justify-center mt-10 h-screen overflow-hidden">
         <div className="flex flex-col w-3/6 gap-5 h-screen overflow-scroll">
+          {/* search */}
+          <div>
+            <input
+              type="text"
+              placeholder="Search"
+              className="w-full p-2 rounded-xl bg-[#211d1e] focus:outline-0 "
+              onChange={handleSearch}
+            />
+          </div>
           {/* Render task groups */}
           {tasks.map((taskGroup, taskGroupIndex) => (
             <React.Fragment key={taskGroupIndex}>
