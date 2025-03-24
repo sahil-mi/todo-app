@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
 import TaskTitleBox from "./TaskTitleBox";
 import TaskItem from "./TaskItem";
 import AddNewTaskItem from "./AddNewTaskItem";
@@ -11,53 +12,19 @@ const TaskCard = () => {
   // Initial tasks data
   const tasksData = [
     {
-      title: "Task Group 1",
+      _id: null,
+      title: "Task Group",
       items: [
-        { description: "Task 1", isDone: false },
-        { description: "Task 2", isDone: false },
-        { description: "Task 3", isDone: true },
-      ],
-      isStarred: false,
-    },
-    {
-      title: "Task Group 2",
-      items: [
-        { description: "Task 1", isDone: true },
-        { description: "Task 2", isDone: true },
-        { description: "Task 3", isDone: false },
-      ],
-      isStarred: false,
-    },
-    {
-      title: "Task Group 3",
-      items: [
-        { description: "Task 1", isDone: false },
-        { description: "Task 2", isDone: false },
-        { description: "Task 3", isDone: false },
-      ],
-      isStarred: false,
-    },
-    {
-      title: "Task Group 4",
-      items: [
-        { description: "Task 1", isDone: false },
-        { description: "Task 2", isDone: false },
-        { description: "Task 3", isDone: false },
-      ],
-      isStarred: false,
-    },
-    {
-      title: "Task Group 5",
-      items: [
-        { description: "Task 1", isDone: false },
-        { description: "Task 2", isDone: false },
-        { description: "Task 3", isDone: false },
+        { _id: null, description: "Task 1", isDone: false },
+        { _id: null, description: "Task 2", isDone: false },
+        { _id: null, description: "Task 3", isDone: true },
       ],
       isStarred: false,
     },
   ];
 
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState([...tasksData]);
+  const [menuOption, setMenuOptions] = useState(0);
 
   // handle task title change
   const handleTaskTitleChange = (
@@ -70,6 +37,8 @@ const TaskCard = () => {
       newTasks[taskGroupIndex].title = value;
       setTasks(newTasks);
     }
+    //call update api
+    updateTask(taskGroupIndex);
   };
 
   // handle task description update
@@ -82,6 +51,8 @@ const TaskCard = () => {
     const newTasks = [...tasks];
     newTasks[taskGroupIndex].items[taskItemIndex].description = value;
     setTasks(newTasks);
+    //call update api
+    updateTask(taskGroupIndex);
   };
 
   // handle task completion toggle
@@ -93,13 +64,22 @@ const TaskCard = () => {
     const value = newTasks[taskGroupIndex].items[taskItemIndex].isDone;
     newTasks[taskGroupIndex].items[taskItemIndex].isDone = !value;
     setTasks(newTasks);
+    //call update api
+    updateTask(taskGroupIndex);
   };
 
   // Add new task inside a group
   const addNewTaskItem = (taskGroupIndex: number) => {
     const newTasks = [...tasks];
-    newTasks[taskGroupIndex].items.push({ description: "", isDone: false });
+    newTasks[taskGroupIndex].items.push({
+      _id: null,
+      description: "",
+      isDone: false,
+    });
     setTasks(newTasks);
+
+    //call update api
+    updateTask(taskGroupIndex);
   };
 
   // change star status
@@ -107,13 +87,20 @@ const TaskCard = () => {
     const newTasks = [...tasks];
     newTasks[taskGroupIndex].isStarred = !newTasks[taskGroupIndex].isStarred;
     setTasks(newTasks);
+
+    //call update api
+    updateTask(taskGroupIndex);
   };
+
   //Delete task group
   const handleDeleteTaskGroup = (taskGroupIndex: number) => {
     if (confirm("Are you sure you want to delete this task group?")) {
       const newTasks = [...tasks];
       newTasks.splice(taskGroupIndex, 1);
       setTasks(newTasks);
+
+      //call delete api
+      deleteTaskGroup(taskGroupIndex);
     }
   };
 
@@ -131,11 +118,38 @@ const TaskCard = () => {
       newTasks[taskGroupIndex].items.splice(taskItemIndex, 1);
     }
     setTasks(newTasks);
+
+    //call update api
+    updateTask(taskGroupIndex);
   };
 
+  // add new group
+  const addNewTaskGroup = async () => {
+    const newTasks = [...tasks];
+    const data = {
+      _id: null,
+      title: "Task Group",
+      items: [{ _id: null, description: " ", isDone: false }],
+      isStarred: false,
+    };
+    //call create api
+    const todo = await createTask(data);
+    if (todo) {
+      newTasks.unshift(todo);
+      setTasks(newTasks);
+    }
+  };
+
+  //----------apis---------------
   const fetchTasks = async () => {
+    const isStarred = menuOption === 1 ? true : null;
+    let apiURL = "/api/todo";
+    if (isStarred) {
+      apiURL = `/api/todo?isStarred=${isStarred}`;
+    }
+
     try {
-      const res = await fetch("/api/todo", {
+      const res = await fetch(apiURL, {
         method: "GET",
       });
       const data = await res.json();
@@ -146,16 +160,73 @@ const TaskCard = () => {
     }
   };
 
+  const createTask = async (payload: {
+    _id: null;
+    title: string;
+    items: { _id: null; description: string; isDone: boolean }[];
+    isStarred: boolean;
+  }) => {
+    try {
+      const res = await fetch(`/api/todo/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      return data.todo;
+      console.log(data, "data");
+    } catch (error) {
+      console.log(error, "error");
+    }
+  };
+
+  const updateTask = useDebouncedCallback(async (taskGroupIndex: number) => {
+    try {
+      console.log(tasks[taskGroupIndex], "<====");
+
+      const id = tasks[taskGroupIndex]._id;
+      const res = await fetch(`/api/todo/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(tasks[taskGroupIndex]),
+      });
+      const data = await res.json();
+      console.log(data, "data");
+    } catch (error) {
+      console.log(error, "error");
+    }
+  }, 300);
+
+  const deleteTaskGroup = async (taskGroupIndex: number) => {
+    try {
+      const id = tasks[taskGroupIndex]._id;
+      const res = await fetch(`/api/todo/${id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(tasks[taskGroupIndex]),
+      });
+
+      const data = await res.json();
+      console.log(data, "data");
+    } catch (error) {
+      console.log(error, "error");
+    }
+  };
+
   React.useEffect(() => {
     fetchTasks();
-  }, []);
+  }, [menuOption]);
 
   console.log(tasks, "~~~tasks");
 
   return (
     <>
       {/* navbar */}
-      <SideNavbar />
+      <SideNavbar
+        menuOption={menuOption}
+        setMenuOptions={setMenuOptions}
+        addNewTaskGroup={addNewTaskGroup}
+      />
       {/* other part */}
       <div className=" w-full flex justify-center mt-10 h-screen overflow-hidden">
         <div className="flex flex-col w-3/6 gap-5 h-screen overflow-scroll">

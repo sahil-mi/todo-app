@@ -4,10 +4,18 @@ import Image from "next/image";
 import add_icon from "../../public/add-icon.png";
 import img from "../../public/menu-icon.png";
 
-const SideNavbar: React.FC = () => {
+interface SideNavbarProps {
+  addNewTaskGroup: () => void;
+  menuOption: number;
+  setMenuOptions: (option: number) => void;
+}
+
+const SideNavbar: React.FC<SideNavbarProps> = (props) => {
+  const { addNewTaskGroup, menuOption, setMenuOptions } = props;
   const [navOpen, setNavOpen] = useState(true);
-  const onMenuIconClick = () => {
-    //pass
+
+  const handleMenuOptionsChange = (option: number) => {
+    setMenuOptions(option);
   };
   return (
     <>
@@ -17,7 +25,7 @@ const SideNavbar: React.FC = () => {
         <nav>
           {/* Menu icon and name */}
           <div className="flex justify-between content-center">
-            <div className="cursor-pointer" onClick={onMenuIconClick}>
+            <div className="cursor-pointer">
               <Image
                 onClick={() => setNavOpen(!navOpen)}
                 width="50"
@@ -34,7 +42,10 @@ const SideNavbar: React.FC = () => {
 
           <div>
             {/* Add new task button */}
-            <div className="h-[40px] bg-[#3d3839] hover:border-2 border-sky-700 border-solid flex justify-center items-center rounded-sm mt-10 cursor-pointer">
+            <div
+              onClick={addNewTaskGroup}
+              className="h-[40px] bg-[#3d3839] hover:border-2 border-sky-700 border-solid flex justify-center items-center rounded-sm mt-10 cursor-pointer"
+            >
               <span className="p-5">New Task </span>
               <Image
                 width="30"
@@ -47,11 +58,21 @@ const SideNavbar: React.FC = () => {
             {/* all tasks and starred tasks */}
             <ul className="mt-10">
               <li>
-                <div className="h-[40px] hover:bg-sky-700 flex items-center rounded-sm cursor-pointer">
+                <div
+                  onClick={() => handleMenuOptionsChange(0)}
+                  className={`h-[40px]  hover:border-2 border-sky-700 border-solid  flex items-center rounded-sm cursor-pointer mb-3 ${
+                    menuOption === 0 ? "bg-sky-700" : ""
+                  } `}
+                >
                   <span className="p-5">All Tasks</span>
                 </div>
               </li>
-              <div className="h-[40px] hover:bg-sky-700  flex items-center rounded-sm cursor-pointer">
+              <div
+                onClick={() => handleMenuOptionsChange(1)}
+                className={`h-[40px] hover:border-2 border-sky-700 border-solid  flex items-center rounded-sm cursor-pointer mb-3 ${
+                  menuOption === 1 ? "bg-sky-700" : ""
+                }`}
+              >
                 <span className="p-5">Starred Tasks</span>
               </div>
             </ul>
@@ -61,7 +82,7 @@ const SideNavbar: React.FC = () => {
 
       {!navOpen ? (
         <div className="flex justify-between content-center p-4 ">
-          <div className="cursor-pointer" onClick={onMenuIconClick}>
+          <div className="cursor-pointer">
             <Image
               onClick={() => setNavOpen(!navOpen)}
               width="50"

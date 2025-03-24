@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI: string =
-  process.env.MONGODB_URI ||
-  "mongodb+srv://sahilmullathil:AkLNtKpElEQ1qqCv@cluster0.b3xvg.mongodb.net/?retryWrites=true&w=majority";
-console.log(MONGODB_URI, "MONGODB_URI");
-
 const connectToDB = async () => {
+  const MONGODB_URI: string | undefined = process.env.MONGODB_URI;
+
+  if (!MONGODB_URI) {
+    throw new Error("DATABASE_URL is not defined in the environment variables");
+  }
+  console.log(process.env, "process.env");
   console.log("inside");
 
   const connectionState = mongoose.connection.readyState;
