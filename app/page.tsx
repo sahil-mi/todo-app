@@ -1,4 +1,3 @@
-import SideNavbar from "./components/SideNavbar";
 import TaskCard from "./components/TaskCard";
 
 export default function Home() {
@@ -6,9 +5,6 @@ export default function Home() {
     <main>
       <section>
         <div className="flex justify-between">
-          {/* navbar */}
-          <SideNavbar />
-          {/* home page */}
           <TaskCard />
         </div>
       </section>
